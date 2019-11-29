@@ -1,0 +1,13 @@
+# Python bytecode
+__pycache__
+
+# Django dynamic directories
+logs
+media
+
+# Environment variables
+.env
+.env.*
+
+# Local Postgres data folder
+pg_data/

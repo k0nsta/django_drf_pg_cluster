@@ -1,0 +1,59 @@
+version: "3"
+
+networks:
+  test_network:
+    driver: overlay
+
+services:
+  web:
+    image: lib_app
+    build:
+      context: .
+      dockerfile: ./compose/app.Dockerfile
+    networks:
+      - test_network
+    volumes:
+      - .:/code
+      - ./logs/web:/logs
+      - ./media:/uploads
+    command: /start.sh
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    # environment:
+    #   - LOGS_ROOT=/logs
+    depends_on:
+      - pg_master
+      - pg_replica
+
+  pg_master:
+    build:
+      context: .
+      dockerfile: ./compose/db_master.Dockerfile
+    networks:
+      - test_network
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=testdb
+      - PG_REP_USER=repusr
+      - PG_REP_PASSWORD=123456
+
+  pg_replica:
+    build:
+      context: .
+      dockerfile: ./compose/db_replica.Dockerfile
+    networks:
+      - test_network
+    environment:
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=testdb
+      - PG_REP_USER=repusr
+      - PG_REP_PASSWORD=123456
+      - PG_MASTER_HOST=pg_master
+    depends_on:
+      - pg_master
