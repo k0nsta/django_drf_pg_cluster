@@ -12,7 +12,7 @@ flake8 = "*"
 isort = "*"
 
 [packages]
-django = "==2.2.7"
+django = "==2.2.8"
 djangorestframework = "==3.10.3"
 markdown = "*"
 django-environ = "*"
